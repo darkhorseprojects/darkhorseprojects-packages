@@ -1,5 +1,5 @@
 packages:
-  responses: zinc://package/openai-responses@0.1.3
+  responses: zinc://package/openai-responses@0.1.4
 
 runtime:
   parallel: false

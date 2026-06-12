@@ -1,5 +1,5 @@
 name: openai-responses
-version: "0.1.3"
+version: "0.1.4"
 about: OpenAI Responses-shaped model adapter package for Zinc.
 
 source:

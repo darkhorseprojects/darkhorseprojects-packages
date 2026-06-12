@@ -25,10 +25,12 @@ instructions: |
 takes:
   question:
     type: text
-    value: What is Zinc?
+    value: |
+      What is Zinc?
 
 gives:
-  answer: text
+  answer:
+    type: text
 ```
 
 It returns YAML:

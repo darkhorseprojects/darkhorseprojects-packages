@@ -86,8 +86,10 @@ def build_prompt(request: dict) -> str:
         for line in str(value).splitlines() or [""]:
             lines.append(f"      {line}")
     lines.append("gives:")
-    for name, type_label in gives.items():
-        lines.append(f"  {name}: {type_label}")
+    for name, spec in gives.items():
+        type_label = spec.get("type", "text") if isinstance(spec, dict) else spec
+        lines.append(f"  {name}:")
+        lines.append(f"    type: {type_label}")
     return "\n".join(lines) + "\n"
 
 
@@ -96,7 +98,8 @@ def shape_response(request: dict, text: str, raw: dict) -> dict:
     requested = request.get("gives") or {}
     parsed_gives = parsed.get("gives") if isinstance(parsed, dict) else None
     gives = {}
-    for name, type_label in requested.items():
+    for name, spec in requested.items():
+        type_label = spec.get("type", "text") if isinstance(spec, dict) else spec
         value = text.strip()
         item = parsed_gives.get(name) if isinstance(parsed_gives, dict) else None
         if isinstance(item, dict):

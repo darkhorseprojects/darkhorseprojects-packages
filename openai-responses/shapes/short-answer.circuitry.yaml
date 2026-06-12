@@ -2,7 +2,8 @@ circuitry: "0.6.1"
 name: package short answer
 
 takes:
-  $question: text
+  $question:
+    type: text
 
 uses:
   answer:
@@ -15,4 +16,5 @@ uses:
       answer: $answer
 
 gives:
-  $answer: text
+  $answer:
+    type: text
