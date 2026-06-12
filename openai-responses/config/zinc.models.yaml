@@ -1,9 +1,9 @@
 packages:
-  responses: openai-responses@0.1.6
+  responses: openai-responses@0.1.7
 
 runtime:
-  parallel: false
-  max_parallel: 1
+  parallel: true
+  max_parallel: 2
 
 models:
   default: local-llama
