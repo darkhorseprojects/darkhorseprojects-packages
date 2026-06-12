@@ -1,0 +1,18 @@
+circuitry: "0.6.1"
+name: package short answer
+
+takes:
+  $question: text
+
+uses:
+  answer:
+    model: local-llama
+    takes:
+      question: $question
+    does: |
+      Answer in one short sentence.
+    gives:
+      answer: $answer
+
+gives:
+  $answer: text

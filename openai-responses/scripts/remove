@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+if [ -f "$HOME/.zinc/config.yaml" ] && grep -q '@responses.adapters.responses' "$HOME/.zinc/config.yaml"; then
+  rm "$HOME/.zinc/config.yaml"
+  echo "removed openai-responses Zinc config"
+else
+  echo "openai-responses Zinc config not installed"
+fi

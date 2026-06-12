@@ -1,0 +1,23 @@
+packages:
+  responses: zinc://package/openai-responses@0.1.3
+
+runtime:
+  parallel: false
+  max_parallel: 1
+
+models:
+  default: local-llama
+
+  local-llama:
+    adapter: @responses.adapters.responses
+    params:
+      provider: llama.cpp
+      endpoint: http://127.0.0.1:30000
+      endpoint_kind: chat_completions
+      model: local-gemma-4-e4b-it
+      temperature: 0.2
+      max_output_tokens: 512
+      context_window: 16384
+      reasoning:
+        effort: medium
+        max_tokens: 512

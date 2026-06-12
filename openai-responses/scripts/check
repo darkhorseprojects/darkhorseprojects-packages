@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+python3 - <<'PY'
+import yaml
+print('pyyaml ok')
+PY
+test -x "$root/adapters/responses.py"
+test -f "$root/config/zinc.models.yaml"
+echo "openai-responses package check passed"
