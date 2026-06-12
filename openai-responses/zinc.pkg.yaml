@@ -1,29 +1,38 @@
 name: openai-responses
-version: "0.1.4"
-about: OpenAI Responses-shaped model adapter package for Zinc.
+version: "0.1.5"
+about: OpenAI Responses-shaped model adapter package.
 
 source:
   git: https://github.com/darkhorseprojects/darkhorseprojects-packages.git
   ref: main
   path: openai-responses
 
-shapes:
-  short-answer: shapes/short-answer.circuitry.yaml
-
-adapters:
-  responses: adapters/responses.py
-
-prompts:
-  runtime: prompts/runtime.md
-
-files:
-  default-config: config/zinc.models.yaml
-
-docs:
-  readme: docs/README.md
-
 assets:
-  icon: assets/icon.svg
+  short-answer:
+    path: shapes/short-answer.circuitry.yaml
+    does: circuitry.shape
+
+  responses:
+    path: adapters/responses.py
+    does:
+      - zinc.adapter
+      - openai.responses
+
+  runtime-prompt:
+    path: prompts/runtime.md
+    does: prompt
+
+  default-config:
+    path: config/zinc.models.yaml
+    does: config
+
+  readme:
+    path: docs/README.md
+    does: doc
+
+  icon:
+    path: assets/icon.svg
+    does: image
 
 scripts:
   setup:

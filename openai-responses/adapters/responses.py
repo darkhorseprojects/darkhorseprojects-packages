@@ -48,7 +48,7 @@ def call_chat_completions(endpoint: str, request: dict, params: dict) -> dict:
     payload = {
         "model": params.get("model", "local"),
         "messages": [
-            {"role": "system", "content": "You are a Zinc model adapter. Return exactly the requested YAML."},
+            {"role": "system", "content": "You are a model adapter. Return exactly the requested YAML."},
             {"role": "user", "content": build_prompt(request)},
         ],
         "temperature": params.get("temperature", 0.2),
@@ -66,9 +66,9 @@ def build_prompt(request: dict) -> str:
     gives = request.get("gives") or {}
     takes = request.get("takes") or {}
     lines = [
-        "Execute this Zinc action-part.",
+        "Execute this action-part.",
         "Return YAML with top-level keys: text, reasoning, gives.",
-        "Each requested give must appear under gives with type and value.",
+        "Each requested give must appear under gives as a scalar or block scalar value.",
         "Do not include markdown fences.",
         "",
         f"part: {request.get('part', '')}",
@@ -78,18 +78,18 @@ def build_prompt(request: dict) -> str:
         lines.append(f"  {line}")
     lines.append("takes:")
     for name, item in takes.items():
-        value = item.get("value", "") if isinstance(item, dict) else item
-        type_label = item.get("type", "value") if isinstance(item, dict) else "value"
+        if isinstance(item, dict):
+            type_label, value = typed_value(item)
+        else:
+            type_label, value = "value", item
         lines.append(f"  {name}:")
-        lines.append(f"    type: {type_label}")
-        lines.append("    value: |")
+        lines.append(f"    {type_label}: |")
         for line in str(value).splitlines() or [""]:
             lines.append(f"      {line}")
     lines.append("gives:")
     for name, spec in gives.items():
-        type_label = spec.get("type", "text") if isinstance(spec, dict) else spec
-        lines.append(f"  {name}:")
-        lines.append(f"    type: {type_label}")
+        type_label = requested_type(spec)
+        lines.append(f"  {name}: {type_label}")
     return "\n".join(lines) + "\n"
 
 
@@ -99,23 +99,42 @@ def shape_response(request: dict, text: str, raw: dict) -> dict:
     parsed_gives = parsed.get("gives") if isinstance(parsed, dict) else None
     gives = {}
     for name, spec in requested.items():
-        type_label = spec.get("type", "text") if isinstance(spec, dict) else spec
+        type_label = requested_type(spec)
         value = text.strip()
         item = parsed_gives.get(name) if isinstance(parsed_gives, dict) else None
         if isinstance(item, dict):
-            value = item.get("value", value)
-            type_label = item.get("type", type_label)
+            _, value = typed_value(item, fallback_type=type_label, fallback_value=value)
         elif item is not None:
             value = item
         elif isinstance(parsed, dict) and isinstance(parsed.get(name), str):
             value = parsed[name]
         if str(value).strip() == str(type_label).strip() and text.strip():
             value = text.strip()
-        gives[name] = {"type": type_label, "value": str(value)}
+        gives[name] = str(value)
 
     visible = parsed.get("text") if isinstance(parsed, dict) and isinstance(parsed.get("text"), str) else text.strip()
     reasoning = parsed.get("reasoning") if isinstance(parsed, dict) and isinstance(parsed.get("reasoning"), str) else extract_reasoning(raw)
     return {"text": visible, "reasoning": reasoning, "gives": gives}
+
+
+def requested_type(spec) -> str:
+    if isinstance(spec, str):
+        return spec
+    if isinstance(spec, dict):
+        if "type" in spec:
+            return str(spec.get("type") or "text")
+        for key in spec.keys():
+            if key != "value":
+                return str(key)
+    return "text"
+
+
+def typed_value(item: dict, fallback_type: str = "value", fallback_value="") -> tuple[str, object]:
+    if "type" in item or "value" in item:
+        return str(item.get("type") or fallback_type), item.get("value", fallback_value)
+    for key, value in item.items():
+        return str(key), value
+    return fallback_type, fallback_value
 
 
 def parse_yaml_text(text: str):
@@ -160,12 +179,10 @@ def render_response_yaml(response: dict) -> str:
     for line in str(response.get("reasoning", "")).splitlines() or [""]:
         lines.append(f"  {line}")
     lines.append("gives:")
-    for name, item in (response.get("gives") or {}).items():
-        lines.append(f"  {name}:")
-        lines.append(f"    type: {item.get('type', 'text')}")
-        lines.append("    value: |")
-        for line in str(item.get("value", "")).splitlines() or [""]:
-            lines.append(f"      {line}")
+    for name, value in (response.get("gives") or {}).items():
+        lines.append(f"  {name}: |")
+        for line in str(value).splitlines() or [""]:
+            lines.append(f"    {line}")
     return "\n".join(lines) + "\n"
 
 

@@ -1,6 +1,6 @@
-# openai-responses Zinc package
+# openai-responses
 
-This package provides a Zinc model adapter with a Responses-shaped adapter contract.
+Self-contained model adapter package with an OpenAI Responses-shaped contract.
 
 The adapter accepts YAML on stdin:
 
@@ -24,13 +24,11 @@ instructions: |
 
 takes:
   question:
-    type: text
-    value: |
-      What is Zinc?
+    text: |
+      What is this package?
 
 gives:
-  answer:
-    type: text
+  answer: text
 ```
 
 It returns YAML:
@@ -43,10 +41,8 @@ reasoning: |
   Reasoning summary if the provider returns one.
 
 gives:
-  answer:
-    type: text
-    value: |
-      Zinc is a local runtime for Circuitry systems.
+  answer: |
+    A concise answer.
 ```
 
-`config/zinc.models.yaml` is package-provided config for a local llama.cpp server on `127.0.0.1:30000` with a 16k context window and a 512-token reasoning budget.
+`config/zinc.models.yaml` points at a local llama.cpp-compatible server on `127.0.0.1:30000` with a 16k context window and a 512-token reasoning budget.

@@ -1,11 +1,22 @@
 # darkhorseprojects-packages
 
-Zinc package monorepo for Dark Horse Projects packages.
+Package collection for Dark Horse Projects.
 
-Each package lives in its own directory and owns a `zinc.pkg.yaml` manifest.
+Each package lives in its own directory and owns a `zinc.pkg.yaml` manifest. Packages are independently versioned and released with package-specific tags.
 
 Current packages:
 
-- `openai-responses` — OpenAI Responses-shaped model adapter package for Zinc.
+- `openai-responses` — self-contained OpenAI Responses-shaped adapter package.
 
-Package manifests may declare `soft_dependencies`. Zinc reports these during inspect/install, but never installs them automatically.
+Manifest assets use one namespace:
+
+```yaml
+assets:
+  responses:
+    path: adapters/responses.py
+    does:
+      - zinc.adapter
+      - openai.responses
+```
+
+Soft dependencies are declared by package name and version, reported during inspect/install, and never installed automatically.
