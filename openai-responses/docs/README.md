@@ -2,6 +2,10 @@
 
 Self-contained model adapter package with an OpenAI Responses-shaped contract.
 
+The package manifest exposes named path assets. Zinc resolves `short-answer` as a shape when a Circuitry document uses it in `shape:` context, and resolves `responses` as the adapter program when a model uses it in `adapter:` context.
+
+Guided `setup`, `check`, and `remove` scripts are included for local configuration.
+
 The adapter accepts YAML on stdin:
 
 ```yaml

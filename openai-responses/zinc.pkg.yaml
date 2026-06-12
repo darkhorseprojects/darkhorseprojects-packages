@@ -1,5 +1,5 @@
 name: openai-responses
-version: "0.1.5"
+version: "0.1.6"
 about: OpenAI Responses-shaped model adapter package.
 
 source:
@@ -8,31 +8,12 @@ source:
   path: openai-responses
 
 assets:
-  short-answer:
-    path: shapes/short-answer.circuitry.yaml
-    does: circuitry.shape
-
-  responses:
-    path: adapters/responses.py
-    does:
-      - zinc.adapter
-      - openai.responses
-
-  runtime-prompt:
-    path: prompts/runtime.md
-    does: prompt
-
-  default-config:
-    path: config/zinc.models.yaml
-    does: config
-
-  readme:
-    path: docs/README.md
-    does: doc
-
-  icon:
-    path: assets/icon.svg
-    does: image
+  short-answer: shapes/short-answer.circuitry.yaml
+  responses: adapters/responses.py
+  runtime-prompt: prompts/runtime.md
+  default-config: config/zinc.models.yaml
+  readme: docs/README.md
+  icon: assets/icon.svg
 
 scripts:
   setup:

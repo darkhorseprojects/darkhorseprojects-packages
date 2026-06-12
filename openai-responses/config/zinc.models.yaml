@@ -1,5 +1,5 @@
 packages:
-  responses: openai-responses@0.1.5
+  responses: openai-responses@0.1.6
 
 runtime:
   parallel: false
