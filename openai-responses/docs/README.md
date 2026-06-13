@@ -31,18 +31,18 @@ The install registers `openai-responses`, runs the package setup script where de
 ```yaml
 zinc:
   packages:
-    responses: openai-responses@0.1.7
+    responses: openai-responses@0.1.8
 
 uses:
   answer:
-    shape: responses.short-answer
+    shape: responses.shapes.short_answer
 ```
 
 ```yaml
 models:
   default: local-llama
   local-llama:
-    adapter: responses.responses
+    adapter: responses.adapter
 ```
 
 Guided `setup`, `check`, and `remove` scripts are included for local configuration on macOS/Linux. On Windows, `zn pkg install` still registers the package; configure `~/.zinc/config.yaml` from `config/zinc.models.yaml` if no platform script runs.

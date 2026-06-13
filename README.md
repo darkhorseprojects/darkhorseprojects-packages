@@ -35,11 +35,11 @@ After installation, package assets are available as `alias.asset` references. Fo
 ```yaml
 zinc:
   packages:
-    responses: openai-responses@0.1.7
+    responses: openai-responses@0.1.8
 
 uses:
   answer:
-    shape: responses.short-answer
+    shape: responses.shapes.short_answer
 ```
 
 Provider adapters use the same alias style in Zinc config:
@@ -48,16 +48,21 @@ Provider adapters use the same alias style in Zinc config:
 models:
   default: local-llama
   local-llama:
-    adapter: responses.responses
+    adapter: responses.adapter
 ```
 
-Manifest assets use one namespace of named paths:
+Manifest assets form a navigable tree of package files:
 
 ```yaml
 assets:
-  short-answer: shapes/short-answer.circuitry.yaml
-  responses: adapters/responses.py
-  runtime-prompt: prompts/runtime.md
+  adapter:
+    path: adapters/responses.py
+  shapes:
+    short_answer:
+      path: shapes/short-answer.circuitry.yaml
+  prompts:
+    runtime:
+      path: prompts/runtime.md
 ```
 
 Zinc resolves asset references from context. A `shape:` reference must load as Circuitry. An `adapter:` reference must be runnable as an adapter program.
