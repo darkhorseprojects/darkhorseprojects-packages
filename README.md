@@ -8,6 +8,49 @@ Current packages:
 
 - `openai-responses` — self-contained OpenAI Responses-shaped adapter package.
 
+## Quick install with `zn`
+
+Clone this collection once, then install the package directory you want.
+
+macOS/Linux:
+
+```bash
+git clone https://github.com/darkhorseprojects/darkhorseprojects-packages.git
+cd darkhorseprojects-packages
+zn pkg install "$PWD/openai-responses" --global
+zn pkg check openai-responses
+```
+
+Windows PowerShell:
+
+```powershell
+git clone https://github.com/darkhorseprojects/darkhorseprojects-packages.git
+Set-Location darkhorseprojects-packages
+zn pkg install (Resolve-Path openai-responses) --global
+zn pkg check openai-responses
+```
+
+After installation, package assets are available as `alias.asset` references. For `openai-responses`, the setup config uses the `responses` alias:
+
+```yaml
+zinc:
+  packages:
+    responses: openai-responses@0.1.7
+
+uses:
+  answer:
+    shape: responses.short-answer
+```
+
+Provider adapters use the same alias style in Zinc config:
+
+```yaml
+models:
+  default: local-llama
+  local-llama:
+    adapter: responses.responses
+```
+
 Manifest assets use one namespace of named paths:
 
 ```yaml
@@ -32,3 +75,7 @@ scripts:
 ```
 
 Soft dependencies are declared by package name and version, reported during inspect/install, and never installed automatically.
+
+## Package lifecycle
+
+`zn pkg install` runs the package `setup` script for the current platform when one is declared. `zn pkg check <name>` runs the package check script. `zn pkg remove <name>` runs the remove script, then unregisters the package.

@@ -4,7 +4,50 @@ Self-contained model adapter package with an OpenAI Responses-shaped contract.
 
 The package manifest exposes named path assets. Zinc resolves `short-answer` as a shape when a Circuitry document uses it in `shape:` context, and resolves `responses` as the adapter program when a model uses it in `adapter:` context.
 
-Guided `setup`, `check`, and `remove` scripts are included for local configuration.
+## Install with `zn`
+
+From a local clone of this package collection:
+
+macOS/Linux:
+
+```bash
+git clone https://github.com/darkhorseprojects/darkhorseprojects-packages.git
+cd darkhorseprojects-packages
+zn pkg install "$PWD/openai-responses" --global
+zn pkg check openai-responses
+```
+
+Windows PowerShell:
+
+```powershell
+git clone https://github.com/darkhorseprojects/darkhorseprojects-packages.git
+Set-Location darkhorseprojects-packages
+zn pkg install (Resolve-Path openai-responses) --global
+zn pkg check openai-responses
+```
+
+The install registers `openai-responses`, runs the package setup script where declared, and makes these references available:
+
+```yaml
+zinc:
+  packages:
+    responses: openai-responses@0.1.7
+
+uses:
+  answer:
+    shape: responses.short-answer
+```
+
+```yaml
+models:
+  default: local-llama
+  local-llama:
+    adapter: responses.responses
+```
+
+Guided `setup`, `check`, and `remove` scripts are included for local configuration on macOS/Linux. On Windows, `zn pkg install` still registers the package; configure `~/.zinc/config.yaml` from `config/zinc.models.yaml` if no platform script runs.
+
+## Adapter contract
 
 The adapter accepts YAML on stdin:
 
