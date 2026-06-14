@@ -1,5 +1,5 @@
 name: openai-responses
-version: "0.1.8"
+version: "0.2.0"
 about: OpenAI Responses-shaped model adapter package.
 
 source:
@@ -7,31 +7,30 @@ source:
   ref: main
   path: openai-responses
 
-assets:
-  adapter:
-    path: adapters/responses.py
-  shapes:
-    short_answer:
-      path: shapes/short-answer.circuitry.yaml
-  prompts:
-    runtime:
-      path: prompts/runtime.md
-  config:
-    default:
-      path: config/zinc.models.yaml
-  docs:
-    readme:
-      path: docs/README.md
-  icon:
-    path: assets/icon.svg
+adapter: adapters/responses.py
 
-scripts:
-  setup:
-    linux: scripts/setup
-    macos: scripts/setup
-  check:
-    linux: scripts/check
-    macos: scripts/check
-  remove:
-    linux: scripts/remove
-    macos: scripts/remove
+shapes:
+  short_answer: shapes/short-answer.circuitry.yaml
+
+prompts:
+  runtime: prompts/runtime.md
+
+config:
+  models: config/zinc.models.yaml
+
+docs:
+  readme: docs/README.md
+
+icon: assets/icon.svg
+
+setup:
+  linux: scripts/setup
+  macos: scripts/setup
+
+check:
+  linux: scripts/check
+  macos: scripts/check
+
+remove:
+  linux: scripts/remove
+  macos: scripts/remove

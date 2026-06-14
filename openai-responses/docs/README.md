@@ -1,79 +1,63 @@
 # openai-responses
 
-Self-contained model adapter package with an OpenAI Responses-shaped contract.
+Self-contained model adapter package for OpenAI Responses-compatible and chat-completions-compatible endpoints.
 
-The package manifest exposes named path assets. Zinc resolves `short-answer` as a shape when a Circuitry document uses it in `shape:` context, and resolves `responses` as the adapter program when a model uses it in `adapter:` context.
+Zinc only registers the package root. Everything else stays in this package and is resolved by walking `zinc.pkg.yaml`.
 
-## Install with `zn`
+Useful package paths:
 
-From a local clone of this package collection:
+```text
+openai-responses.adapter
+openai-responses.config.models
+openai-responses.shapes.short_answer
+openai-responses.prompts.runtime
+openai-responses.docs.readme
+```
 
-macOS/Linux:
+## Install
 
 ```bash
-git clone https://github.com/darkhorseprojects/darkhorseprojects-packages.git
-cd darkhorseprojects-packages
 zn pkg install "$PWD/openai-responses" --global
 zn pkg check openai-responses
 ```
 
-Windows PowerShell:
+Install does not copy package config into `~/.zinc`. Use or edit this file directly when you want this package's model profile:
 
-```powershell
-git clone https://github.com/darkhorseprojects/darkhorseprojects-packages.git
-Set-Location darkhorseprojects-packages
-zn pkg install (Resolve-Path openai-responses) --global
-zn pkg check openai-responses
+```text
+openai-responses/config/zinc.models.yaml
 ```
 
-The install registers `openai-responses`, runs the package setup script where declared, and makes these references available:
-
-```yaml
-zinc:
-  packages:
-    responses: openai-responses@0.1.8
-
-uses:
-  answer:
-    shape: responses.shapes.short_answer
-```
+A Zinc config can point at the adapter like this:
 
 ```yaml
 models:
   default: local-llama
   local-llama:
-    adapter: responses.adapter
+    adapter: openai-responses.adapter
+    params:
+      endpoint: http://127.0.0.1:30000
+      endpoint_kind: chat_completions
+      model: local-gemma-4-e4b-it
 ```
-
-Guided `setup`, `check`, and `remove` scripts are included for local configuration on macOS/Linux. On Windows, `zn pkg install` still registers the package; configure `~/.zinc/config.yaml` from `config/zinc.models.yaml` if no platform script runs.
 
 ## Adapter contract
 
-The adapter accepts YAML on stdin:
+The adapter receives a YAML request file path as argv[1]. `does` arrives as `instruction`; it is not shell text or Zinc code.
 
 ```yaml
-part: draft
 model: local-llama
+part: answer
+part_material: |
+  {"part":{"name":"answer"}}
 params:
-  provider: llama.cpp
   endpoint: http://127.0.0.1:30000
   endpoint_kind: chat_completions
   model: local-gemma-4-e4b-it
-  temperature: 0.2
-  max_output_tokens: 512
-  context_window: 16384
-  reasoning:
-    effort: medium
-    max_tokens: 512
-
-instructions: |
-  Draft the answer.
-
+instruction: |
+  Answer in one short sentence.
 takes:
-  question:
-    text: |
-      What is this package?
-
+  question: |
+    What is Zinc?
 gives:
   answer: text
 ```
@@ -82,14 +66,10 @@ It returns YAML:
 
 ```yaml
 text: |
-  Visible text if useful.
-
+  Optional visible text.
 reasoning: |
-  Reasoning summary if the provider returns one.
-
+  Optional provider reasoning summary.
 gives:
   answer: |
-    A concise answer.
+    Zinc coordinates Circuitry execution through package capabilities.
 ```
-
-`config/zinc.models.yaml` points at a local llama.cpp-compatible server on `127.0.0.1:30000` with a 16k context window and a 512-token reasoning budget.

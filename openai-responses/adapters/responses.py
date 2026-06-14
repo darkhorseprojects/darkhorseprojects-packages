@@ -72,18 +72,15 @@ def build_prompt(request: dict) -> str:
         "Do not include markdown fences.",
         "",
         f"part: {request.get('part', '')}",
-        "instructions: |",
+        "instruction: |",
     ]
-    for line in str(request.get("instructions") or "").splitlines() or [""]:
+    for line in str(request.get("instruction") or "").splitlines() or [""]:
         lines.append(f"  {line}")
     lines.append("takes:")
     for name, item in takes.items():
-        if isinstance(item, dict):
-            type_label, value = typed_value(item)
-        else:
-            type_label, value = "value", item
+        value = payload_value(item)
         lines.append(f"  {name}:")
-        lines.append(f"    {type_label}: |")
+        lines.append("    value: |")
         for line in str(value).splitlines() or [""]:
             lines.append(f"      {line}")
     lines.append("gives:")
@@ -132,9 +129,15 @@ def requested_type(spec) -> str:
 def typed_value(item: dict, fallback_type: str = "value", fallback_value="") -> tuple[str, object]:
     if "type" in item or "value" in item:
         return str(item.get("type") or fallback_type), item.get("value", fallback_value)
-    for key, value in item.items():
-        return str(key), value
-    return fallback_type, fallback_value
+    return fallback_type, payload_value(item, fallback_value)
+
+
+def payload_value(item, fallback_value=""):
+    if isinstance(item, dict):
+        if "value" in item:
+            return item.get("value", fallback_value)
+        return fallback_value
+    return item
 
 
 def parse_yaml_text(text: str):

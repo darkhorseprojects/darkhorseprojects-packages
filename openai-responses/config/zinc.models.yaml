@@ -1,15 +1,11 @@
 packages:
-  responses: openai-responses@0.1.8
-
-runtime:
-  parallel: true
-  max_parallel: 2
+  openai-responses: openai-responses
 
 models:
   default: local-llama
 
   local-llama:
-    adapter: responses.adapter
+    adapter: openai-responses.adapter
     params:
       provider: llama.cpp
       endpoint: http://127.0.0.1:30000

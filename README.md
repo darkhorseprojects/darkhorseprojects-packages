@@ -2,85 +2,49 @@
 
 Package collection for Dark Horse Projects.
 
-Each package lives in its own directory and owns a `zinc.pkg.yaml` manifest. Packages are independently versioned and released with package-specific tags.
+Each package is a self-contained directory with a `zinc.pkg.yaml` manifest. Zinc registers package roots and resolves package paths lazily from the manifest; it does not catalog package files into its database.
 
 Current packages:
 
-- `openai-responses` — self-contained OpenAI Responses-shaped adapter package.
+- `openai-responses` — model adapter package for OpenAI Responses-compatible and chat-completions-compatible endpoints.
 
-## Quick install with `zn`
-
-Clone this collection once, then install the package directory you want.
-
-macOS/Linux:
+## Install
 
 ```bash
-git clone https://github.com/darkhorseprojects/darkhorseprojects-packages.git
-cd darkhorseprojects-packages
 zn pkg install "$PWD/openai-responses" --global
 zn pkg check openai-responses
 ```
 
-Windows PowerShell:
+Package references are manifest paths:
 
-```powershell
-git clone https://github.com/darkhorseprojects/darkhorseprojects-packages.git
-Set-Location darkhorseprojects-packages
-zn pkg install (Resolve-Path openai-responses) --global
-zn pkg check openai-responses
+```text
+openai-responses.adapter
+openai-responses.config.models
+openai-responses.shapes.short_answer
 ```
 
-After installation, package assets are available as `alias.asset` references. For `openai-responses`, the setup config uses the `responses` alias:
-
-```yaml
-zinc:
-  packages:
-    responses: openai-responses@0.1.8
-
-uses:
-  answer:
-    shape: responses.shapes.short_answer
-```
-
-Provider adapters use the same alias style in Zinc config:
+Example model config:
 
 ```yaml
 models:
   default: local-llama
   local-llama:
-    adapter: responses.adapter
+    adapter: openai-responses.adapter
+    params:
+      endpoint: http://127.0.0.1:30000
+      endpoint_kind: chat_completions
+      model: local-gemma-4-e4b-it
 ```
 
-Manifest assets form a navigable tree of package files:
+Lifecycle hooks are ordinary manifest paths:
 
 ```yaml
-assets:
-  adapter:
-    path: adapters/responses.py
-  shapes:
-    short_answer:
-      path: shapes/short-answer.circuitry.yaml
-  prompts:
-    runtime:
-      path: prompts/runtime.md
+setup:
+  linux: scripts/setup
+check:
+  linux: scripts/check
+remove:
+  linux: scripts/remove
 ```
 
-Zinc resolves asset references from context. A `shape:` reference must load as Circuitry. An `adapter:` reference must be runnable as an adapter program.
-
-Packages can provide guided lifecycle scripts:
-
-```yaml
-scripts:
-  setup:
-    linux: scripts/setup
-  check:
-    linux: scripts/check
-  remove:
-    linux: scripts/remove
-```
-
-Soft dependencies are declared by package name and version, reported during inspect/install, and never installed automatically.
-
-## Package lifecycle
-
-`zn pkg install` runs the package `setup` script for the current platform when one is declared. `zn pkg check <name>` runs the package check script. `zn pkg remove <name>` runs the remove script, then unregisters the package.
+Package config remains inside the package unless a human explicitly copies or references it elsewhere.
